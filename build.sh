@@ -495,6 +495,9 @@ build_one() {
         make install
         ;;
     ffi)
+        # See https://github.com/libffi/libffi/issues/552.
+        sed -i 's/mv \$srcdir\/config.log/cp \$srcdir\/config.log/' configure
+
         do_configure
         make $parallel
         if [ "$can_test" = yes ] ; then
@@ -786,20 +789,12 @@ probe() {
             java_home=$(find "$(cygpath c:\\Program\ Files\\Java)" \
                     -maxdepth 1 -name "jdk*" -print -quit)
         fi
-        if [ ! -e "$ant_home" ] ; then
-            echo "Ant directory not found."
-            exit 1
-        fi
-        if [ ! -e "$java_home" ] ; then
-            echo "Java directory not found."
-            exit 1
-        fi
         ;;
     *)
         # Other
         can_test="no"
-        ant_home=""
-        java_home=""
+        ant_home="${ANT_HOME}"
+        java_home="${JAVA_HOME}"
 
         # Ensure Wine is not run via binfmt_misc, since some packages
         # attempt to run programs after building them.
@@ -818,6 +813,15 @@ probe() {
             rm conftest
         done
     esac
+
+    if [ ! -e "$ant_home" ] ; then
+        echo "Ant directory not found."
+        exit 1
+    fi
+    if [ ! -e "$java_home" ] ; then
+        echo "Java directory not found."
+        exit 1
+    fi
 }
 
 fail_handler() {

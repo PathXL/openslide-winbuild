@@ -106,3 +106,26 @@ Set package version string in Zip file names to `pkgver`.
 #### `-s<suffix>`
 
 Append `suffix` to the OpenSlide version string.
+
+
+Cross-compiling from Linux using Docker
+---------------------------------------
+
+Build the docker image as follows:
+```
+$ docker-compose build openslide-winbuild
+```
+
+Then run `./build.sh` from docker, for example:
+```
+$ docker-compose run openslide-winbuild ./build.sh -m 64 bdist
+```
+
+The docker image has the following MinGW and GCC versions:
+```
+$ docker run --rm openslide-winbuild bash -c "apt show mingw-w64 | grep -i version"
+Version: 5.0.3-1
+$ docker run --rm openslide-winbuild bash -c "x86_64-w64-mingw32-gcc --version"
+x86_64-w64-mingw32-gcc (GCC) 7.3-win32 20180312
+```
+
